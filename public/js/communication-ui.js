@@ -1,245 +1,152 @@
 
-
+window.AGORA_COMMUNICATION_UI = {
 // UI buttons
-function agoraEnableUiControls(localStream) {
+  enableUiControls: function (localStream) {
 
-  jQuery("#mic-btn").prop("disabled", false);
-  jQuery("#video-btn").prop("disabled", false);
-  jQuery("#screen-share-btn").prop("disabled", false);
-  jQuery("#exit-btn").prop("disabled", false);
+    jQuery('#rejoin-btn').click(window.AGORA_COMMUNICATION_UI.rejoinChannel);
 
-  jQuery("#mic-btn").click(function(){
-    agoraToggleMic(localStream);
-  });
+    // keyboard listeners
+    function keyboardListeners(e) {
+      switch (e.key) {
+        case "m":
+          console.log("quick toggle the mic");
+          window.AGORA_UI_UTILS.toggleMic(localStream);
+          break;
+        case "v":
+          console.log("quick toggle the video");
+          window.AGORA_UI_UTILS.toggleVideo(localStream);
+          break; 
+        case "s":
+          console.log("initializing screen share");
+          toggleScreenShareBtn(); // set screen share button icon
+          jQuery("#screen-share-btn").prop("disabled",true); // disable the button on click
+          if(screenShareActive){
+            stopScreenShare();
+          } else {
+            initScreenShare(); 
+          }
+          break;
+        case "q":
+          console.log("so sad to see you quit the channel");
+          window.AGORA_UTILS.agoraLeaveChannel(); 
+          break;   
+        default:  // do nothing
+      }
 
-  jQuery("#video-btn").click(function(){
-    agoraToggleVideo(localStream);
-  });
+      // (for testing) 
+      if(e.key === "r") { 
+        // window.history.back(); // quick reset
+      }
+    };
+    // jQuery(document).keypress(keyboardListeners);
+  },
 
-  jQuery("#screen-share-btn").click(function() {
-    toggleScreenShareBtn(); // set screen share button icon
-    var loaderIcon = jQuery(this).find('.spinner-border');
-    var closeIcon = jQuery('#screen-share-icon');
-    loaderIcon.show();
-    closeIcon.hide();
+  logCameraDevices: function () {
+    console.log("Checking for Camera Devices.....")
+    AgoraRTC.getDevices (function(devices) {
+      var devCount = devices.length;
+      if (devCount>0) {
+        var id = devices[0].deviceId;
+        // console.log('Device:', devices[0])
+      }
+    });
 
-    var toggleLoader = function(err, next) {
-      loaderIcon.hide();
-      closeIcon.show();
-      // TODO: is not needed but I could capture the callback result here...
+    agoraClient.getCameras(function(cameras) {
+      var devCount = cameras.length;
+      var id = cameras[0].deviceId;
+      // console.log("getCameras: " + JSON.stringify(cameras));
+    });
+  },
+
+
+  rejoinChannel: function () {
+    var thisBtn = jQuery(this);
+    if(!thisBtn.prop('disabled')) {
+      thisBtn.prop("disabled", true);
+      thisBtn.find('.spinner-border').show();
+      // joinChannel(window.channelName);
+      if (jQuery("#mic-icon").hasClass('fa-microphone-slash')) {
+        jQuery("#mic-icon").toggleClass('fa-microphone').toggleClass('fa-microphone-slash');
+        window.AGORA_UTILS.toggleVisibility("#mute-overlay", false); // hide the muted mic icon
+      }
+      
+      if (jQuery("#video-icon").hasClass('fa-video-slash')) {
+        jQuery("#video-icon").toggleClass('fa-video').toggleClass('fa-video-slash'); // toggle the video icon
+        window.AGORA_UTILS.toggleVisibility("#no-local-video", false); // hide the user icon when video is enabled
+      } 
+      window.AGORA_UTILS.agoraJoinChannel(window.channelName);
     }
+  },
 
-    jQuery("#screen-share-btn").prop("disabled",true); // disable the button on click
-    if(window.screenShareActive){
-      stopScreenShare(toggleLoader);
+  /* Function to check if user can join as a host (If user is not in the list of broadcaster users and total remote streams is already equeal to max hosts allowed, then, user will join as audience) */
+  canJoinAsHost: function(){
+    if(window.joinAsHost == 0 && window.max_host_users_limit!=''){
+      
+      let totalRemoteStreams = Object.keys(window.remoteStreams).length;
+      
+      /* Exclude Screen Share Streams from count */
+      let count = Object.keys(window.remoteStreams).filter(k => k in window.screenshareClients).length;
+      totalRemoteStreams = totalRemoteStreams-count;
+
+      /* Exclude Host users streams from count */
+      let hostsCount = Object.keys(window.remoteStreams).filter(k => k in window.host_users).length;
+      totalRemoteStreams = totalRemoteStreams-hostsCount;
+
+      console.log("hlwtotalRemoteStreams", totalRemoteStreams)
+
+      if(totalRemoteStreams>=window.max_host_users_limit){
+        return false;
+      } else {
+        return true;
+      }
     } else {
-      initScreenShare(toggleLoader);
+      return true;
     }
-  });
+  },
 
-  jQuery("#exit-btn").click(function(){
-    console.log("so sad to see you leave the channel");
-    agoraLeaveChannel(); 
-  });
-
-  jQuery('#rejoin-btn').click(rejoinChannel);
-
-  // keyboard listeners 
-  jQuery(document).keypress(function(e) {
-    switch (e.key) {
-      case "m":
-        console.log("squick toggle the mic");
-        agoraToggleMic(localStream);
-        break;
-      case "v":
-        console.log("quick toggle the video");
-        agoraToggleVideo(localStream);
-        break; 
-      /* case "s":
-        console.log("initializing screen share");
-        toggleScreenShareBtn(); // set screen share button icon
-        jQuery("#screen-share-btn").prop("disabled",true); // disable the button on click
-        if(screenShareActive){
-          stopScreenShare();
-        } else {
-          initScreenShare(); 
-        }
-        break;  */
-      case "q":
-        console.log("so sad to see you quit the channel");
-        agoraLeaveChannel(); 
-        break;   
-      default:  // do nothing
-    }
-
-    // (for testing) 
-    if(e.key === "r") { 
-      // window.history.back(); // quick reset
-    }
-  });
-}
-
-function agoraToggleBtn(btn){
-  btn.toggleClass('btn-dark').toggleClass('btn-danger');
-}
-
-function agora_toggleVisibility(elementID, visible) {
-  if (visible) {
-    jQuery(elementID).attr("style", "display:block");
-  } else {
-    jQuery(elementID).attr("style", "display:none");
-  }
-}
-
-function agoraToggleMic(localStream) {
-  agoraToggleBtn(jQuery("#mic-btn")); // toggle button colors
-  jQuery("#mic-icon").toggleClass('fa-microphone').toggleClass('fa-microphone-slash'); // toggle the mic icon
-  if (jQuery("#mic-icon").hasClass('fa-microphone')) {
-    localStream.unmuteAudio(); // enable the local mic
-    agora_toggleVisibility("#mute-overlay", false); // hide the muted mic icon
-  } else {
-    localStream.muteAudio(); // mute the local mic
-    agora_toggleVisibility("#mute-overlay", true); // show the muted mic icon
-  }
-}
-
-function agoraToggleVideo(localStream) {
-  agoraToggleBtn(jQuery("#video-btn")); // toggle button colors
-  jQuery("#video-icon").toggleClass('fa-video').toggleClass('fa-video-slash'); // toggle the video icon
-  if (jQuery("#video-icon").hasClass('fa-video')) {
-    localStream.unmuteVideo(); // enable the local video
-    agora_toggleVisibility("#no-local-video", false); // hide the user icon when video is enabled
-    logCameraDevices();
-  } else {
-    localStream.muteVideo(); // disable the local video
-    agora_toggleVisibility("#no-local-video", true); // show the user icon when video is disabled
-  }
-}
-
-function logCameraDevices() {
-  console.log("Checking for Camera Devices.....")
-  AgoraRTC.getDevices (function(devices) {
-    var devCount = devices.length;
-    if (devCount>0) {
-      var id = devices[0].deviceId;
-      // console.log('Device:', devices[0])
-      // console.log("getDevices: " + JSON.stringify(devices));
-    }
-  });
-
-  agoraClient.getCameras(function(cameras) {
-    var devCount = cameras.length;
-    var id = cameras[0].deviceId;
-    console.log("getCameras: " + JSON.stringify(cameras));
-  });
-}
-
-
-function rejoinChannel() {
-  var thisBtn = jQuery(this);
-  if(!thisBtn.prop('disabled')) {
-    thisBtn.prop("disabled", true);
-    thisBtn.find('.spinner-border').show();
-    joinChannel(window.channelName);
-  }
-}
-
-
-function calculateVideoScreenSize() {
-  var container = jQuery('#full-screen-video');
-  // console.log('Video SIZE:', container.outerWidth());
-  var size = getSizeFromVideoProfile();
-
-  // https://math.stackexchange.com/a/180805
-  var newHeight = 0;
-  console.log('Width:', container.outerWidth());
-  if (container.outerWidth() > 520) {
-    newHeight = container.outerWidth() * size.height / size.width;
-  } else {
-    newHeight = container.outerWidth();
-  }
-  console.log('newHeight:', newHeight);
-  container.outerHeight(newHeight);
-  return {
-    width: container.outerWidth(),
-    height: container.outerHeight()
-  };
-}
-
-// get sizes based on the video quality settings
-function getSizeFromVideoProfile() {
-  // https://docs.agora.io/en/Interactive%20Broadcast/videoProfile_web?platform=Web#video-profile-table
-  switch(window.cameraVideoProfile) {
-    case '480p_8':
-    case '480p_9': return { width: 848, height: 480 };
-    case '720p':
-    case '720p_1':
-    case '720p_2':
-    case '720p_3': return { width: 1280, height: 720 };
-    case '720p_6': return { width: 960, height: 720 };
-    case '1080p':
-    case '1080p_1':
-    case '1080p_2':
-    case '1080p_3':
-    case '1080p_5': return { width: 1920, height: 1080 };
-  }
-}
-
-// Ajax simple requests
-function agoraApiRequest(endpoint_url, endpoint_data) {
-  var ajaxRequestParams = {
-    method: 'POST',
-    url: endpoint_url,
-    data: endpoint_data
-  };
-  return jQuery.ajax(ajaxRequestParams)
-}
-
-function fullscreenInit() {
-  const resizeVideo = function(firstTime) {
-    const size = calculateVideoScreenSize();
-    const sliderSize = size.width - 200;
+  joinAsAudience: async function(){
+    //setTimeout(async() => {
+      
+      await window.AGORA_UTILS.agoraLeaveChannel();
+      var params = {
+        action: 'load_audience_view', // wp ajax action
+        channel_id: window.channelId,
+        page_title: page_title
+      };
     
-    if (!firstTime) {
-      // jQuery('.slick-avatars').slick('breakpoint')
-    } else {
-      jQuery('.remote-users').outerWidth(sliderSize);
-    }
-    return size;
+      /* Remove Previous RTM Event Listeners when joining from audience to host */
+      window.removeEventListener('agora.rtm_init', loadChatApp);
+      window.removeEventListener('agora.rtmMessageFromChannel', receiveRTMMessage);
+    
+      /* Remove Previous Files of audience */
+      if(jQuery("script#wp-agora-io-chat-js").length>0){
+        jQuery("script#wp-agora-io-chat-js").remove();
+      }
+    
+      if(jQuery("script#AgoraCommunicationClient-js").length>0){
+        jQuery("script#AgoraCommunicationClient-js").remove();
+      }
+
+      if(jQuery("script#wp-agora-raise-hand-js").length>0){
+        jQuery("script#wp-agora-raise-hand-js").remove();
+      }
+    
+      //jQuery("link#wp-agora-io-chat-fab-css").remove();
+    
+      window.AGORA_UTILS.agoraApiRequest(ajax_url, params).done(function(res) {
+        console.log("afterAjaxSuccess")
+    
+        let mainElm = jQuery('#agora-root').parent();
+        jQuery('#agora-root').remove();
+        mainElm.html(res);
+        appendDivWithAllStreamHiddenInGhostMode();
+        jQuery("#raiseHand").remove();
+        apply_global_colors();
+    
+      }).fail(function(err) {
+        console.error('API Error:', err.responseJSON ? err.responseJSON.errors : err);
+      })
+    //}, 2000);
   }
 
-  const size = resizeVideo(true);
-  jQuery(window).smartresize(resizeVideo);
-
-  const sliderSize = size.width - 200;
-  const slidesToShow = Math.floor(sliderSize / 110);
-  window.slickSettings = {
-    dots: false,
-    slidesToShow,
-    centerMode: false,
-    responsive: [{
-      breakpoint: 480,
-      settings: {slidesToShow: 1}
-    }, {
-      breakpoint: 600,
-      settings: {slidesToShow: 2}
-    }, {
-      breakpoint: 960,
-      settings: {slidesToShow: 3}
-    }, {
-      breakpoint: 1128,
-      settings: {slidesToShow: 4}
-    }, {
-      breakpoint: 1366,
-      settings: {slidesToShow: 5}
-    }]
-  };
-  
-  jQuery('#slick-avatars').slick(window.slickSettings);
-  // jQuery('.slick-avatars').on('breakpoint', function(event, slick, breakpoint) {
-  //   console.log('breakpoint:', breakpoint)
-  // })
-  initClientAndJoinChannel(window.agoraAppId, window.channelName);
 }
-
-//EOF

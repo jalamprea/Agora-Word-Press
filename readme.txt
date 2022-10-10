@@ -1,82 +1,226 @@
-=== Agora Word Press ===
+=== Agora Video for WordPress ===
 Contributors: jalejo08, hermesf
-Tags: communications, video, real-time, video-streaming, real-time communications, live-streaming, interactive broadcasting, interactive streaming, video chat, video call, live broadcasting, video broadcasting, video conferencing
+Tags: live streaming, video streaming, video call, video conference
 Requires at least: 5.0
-Tested up to: 5.2
-Requires PHP: 7.2
-Stable tag: 1.0
-Donate link: ...
+Tested up to: 5.9.2
+Requires PHP: 7.1
+Stable tag: 3.0.0
+Donate link:
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Easily add live broadcasting and video conferencing functionality into your Wordpress posts and page.
+Easily add live streaming and video conferencing functionality into your Wordpress posts and page.
 
 == Description ==
-The Agora WordPress plugin allows you to easily add live broadcast or video conferencing functionality into your posts and pages. Through the admin dashboard, you can easily create and configure a broadcast or communication channel. The Agora WordPress plugin is also highly customizable and enables  you to  pick and choose the calling or interactive broadcast settings you need.
+The Agora Video for WordPress plugin lets you easily add live streaming or video conferencing functionality to your WordPress posts and pages. You can easily create and configure streaming or communication channels through the WordPress Admin dashboard and embed real time communications without any coding required!
 
-Agora is a Real-Time Engagement Platform as a Service that provides a fully encrypted, GDPR and HIPPA-compliant network. Agora delivers easy to embed Real-Time Communications (RTC) and Engagement APIs which include all the development tools and cloud infrastructure needed for mobile, web, and desktop applications.
+Features Include:
+-  Live video streaming with Host UI template
+-  Video calling with group video chat UI template
+-  Cloud recording directly to Amazon S3
+-  Screen sharing support
+-  RTMP support
+-  Customizable UI
+-  Customizable configurations (credentials, video profile, Codec, etc.) and much more!
+
+Agora is a leading video, voice and live interactive streaming platform, helping developers deliver rich in-app experiences—including embedded voice and video chat, real-time recording, interactive live streaming, and real-time messaging.
 
 With over 200+ data centers globally, the Agora’s Software-Defined Real-time Network (SD-RTN™) is trusted and  widely used by the world’s biggest brands and provides ease of scaling for up to 1 million peak concurrent users (PCU) in a single session with unmatched quality of experience.  
 Agora  fully supports a range of development environments, making it easy to deliver deep integration of high-quality, extreme low-latency video calling across all platforms and channels.
 
-Get started for free! The first 10,000 minutes each month are free, including free starter support through Slack. Agora offer a simple and affordable pricing model including volume discounts. See pricing details: https://www.agora.io/price-2
+Get started for free! The first 10,000 minutes each month are free, including free starter support through Slack. Agora offer a simple and affordable pricing model including volume discounts. See pricing details: [https://www.agora.io/pricing](https://www.agora.io/pricing)
 
-Terms of Service: https://www.agora.io/en/terms-of-service
-Privacy Policy: https://www.agora.io/en/privacy-policy
-Acceptable Use Policy: https://www.agora.io/en/acceptable-use-policy
-Compliance Policy: https://www.agora.io/en/compliance
+- Terms of Service: [https://www.agora.io/en/terms-of-service](https://www.agora.io/en/terms-of-service)
+- Privacy Policy: [https://www.agora.io/en/privacy-policy](https://www.agora.io/en/privacy-policy)
+- Acceptable Use Policy: [https://www.agora.io/en/acceptable-use-policy](https://www.agora.io/en/acceptable-use-policy)
+- Compliance Policy: [https://www.agora.io/en/compliance](https://www.agora.io/en/compliance)
 
 ## Features ##
 
--  One-to-One Video Calls
--  Group Video Calls
--  One-to-Many Live Broadcasts
--  Record calls and broadcasts to your cloud storage
--  Push live broadcasts to YouTube, FacebookLive, Twitch, Vimeo, and any other CDN that supports the RTMP protocol.
--  Pull live streams from any CDN into live broadcasts
--  Customizable UI elements
+-  Live video streaming with Host UI template
+-  Video calling with group video chat UI template
+-  Cloud recording directly to Amazon S3
+-  Screen sharing support
+-  RTMP support
+-  Customizable UI
+-  Customizable configurations (credentials, video profile, Codec, etc.) and much more!
 
-# One-to-One Video Calls
+### One-to-One Video Calls ###
 Dramatically increase user engagement with Agora Video calling by delivering high quality, low-latency, one-to-one video call capabilities directly into your own applications. 
 
-# Group Chat Video Calling
+### Group Chat Video Calling ### 
 Group chat calls scales to include up to 17 participants – ensuring that you can handle all the use-cases you will ever need.
 
-# Live Broadcasting
+### Live Streaming ###
 Agora's flexible APIs enable deep integration of high quality, low latency – live video streaming experiences
 
+## Quick Start Guide ##
+ [https://medium.com/agora-io/agora-video-for-wordpress-plugin-quickstart-guide-b8838abd4245](https://medium.com/agora-io/agora-video-for-wordpress-plugin-quickstart-guide-b8838abd4245)
+
 == Installation ==
-FTP
-1.  Upload the `Agora-Word-Press` folder to the `/wp-content/plugins/` directory
-2.  Activate the plugin through the 'Plugins' menu in WordPress
+**WP Plugins**
+#1. Go to the Add New section of the Plugins section of your WordPress Admin Dashboard.
+#2. Search for Agora.io 
+#3. Click the *Install Now* button 
+#4. Once the plugin status changes to *“Installed”*, Click the *Activate* button.
 
-Plugin Upload
-1.  Upload the `Agora-Word-Press` zip through the admin dashboard.
-2.  Activate the plugin through the 'Plugins' menu in WordPress
+**Zip Upload**
+#1. Click the *Download* button to download the plugin zip.
+#2. Go the **Plugins** section of your WordPress Admin Dashboard
+#3. Click the *Upload* button and then upload the *wp-agora-io.zip* through the WordPress Admin Dashboard.
+#4. The plugin upload screen will load. Once "Plugin installed successfully..." click the *Activate* button.
 
-Agora setup (basic)
-1.  Create or Log into an Agora developer account (https://console.agora.io)
-2.  Create a project and take note of the `App ID` and `App certificate` keys
-3.  Navigate to the Agora Word Press Settings page and input `App ID` and `App certificate` keys
+**FTP**
+#1. Click the *Download* button to download the plugin zip.
+#2. Upload the `wp-agora-io` folder to the `/wp-content/plugins/` directory
+#3. Activate the plugin through the **Plugins** section of the WordPress Admin Dashboard
 
-Agora setup (advanced)
-1.  Create or Log into an Agora developer account (https://console.agora.io)
-2.  Create a project and take note of the `App ID` and `App certificate` keys
-3.  Navigate to "Products and Usage" page. Enable `RTMP` and `Cloud Recording`.
-4.  Navigate to the Dashboard API section of your Agora Dashboard (https://console.agora.io/restfulApi) and take note of your `Customer ID` and `Customer Certificate` keys.
-5.  Navigate to the Agora Word Press Settings page and input `App ID`, `App certificate`, `Customer ID`, and `Customer Certificate` keys
+...
+
+**Basic Setup**
+#1. Create or Log into an [Agora developer account](https://console.agora.io)
+#2. Create a project, take note of the `App ID` and `App certificate` keys
+#3. Navigate to the plugin's *Settings* page and input `App ID` and `App certificate` keys
+
+**Advanced Setup**
+#1. Create or Log into your [Agora developer account](https://console.agora.io)
+#2. Create a project, take note of the `App ID` and `App certificate` keys
+#3. Navigate to *"Products and Usage"* page. Enable **`RTMP`** and **`Cloud Recording`**.
+#4. Navigate to the *Dashboard API* section of your [Agora Console](https://console.agora.io/restfulApi), take note of your `Customer ID` and `Customer Certificate` keys.
+#5. Navigate to the plugin's *Settings* page and input `App ID`, `App certificate`, `Customer ID`, and `Customer Certificate` keys
 
 == Screenshots ==
-1. View all channels and their short codes
-2. View and edit a broadcast channel's settings
-3. View and edit your Agora credentials
+#1. View all channels and their short codes
+#2. View and edit a broadcast channel's settings
+#3. View and edit your Agora credentials
+#4. View all of your Agora Cloud Recordings
 
 == Changelog ==
 Version 1.0
 Initial build of the Agora.io WebSDK implemented as a WordPress plugin.
 
+Version 1.1
+Hotfix - for environments where js global scope is limited to local file. 
+
+Version 1.2
+Hotfix - patch to fix ui button issue caused by UTILS naming collision. 
+
+Version 1.3
+Hotfix - patch to fix audience uid issue, where the audience uid in joinChannel did not match uid in token. 
+
+Version 1.4
+Updated to Agora WebSDK v3.0.2, fixed a patch for uid's.
+
+Version 1.5
+Updated to resolves issues with saving Agora Settings that are caused by plugin conflicts. Fixed grammer error. Release resolves issues:
+- [43](https://github.com/AgoraIO/Agora-Word-Press/issues/43) 
+- [52](https://github.com/AgoraIO/Agora-Word-Press/issues/52) 
+
+Version 1.5.1
+Updated to resolves issues with saving Agora Settings. Release resolves issues:
+- [52](https://github.com/AgoraIO/Agora-Word-Press/issues/52) 
+
+Version 1.5.2
+Updated to resolves issues with saving Agora Settings created by previous hotfix. Release resolves issues:
+- [52](https://github.com/AgoraIO/Agora-Word-Press/issues/52) 
+
+Version 1.6.2
+Updated to resolves issues with with screen sharing in Chrome browser. Resolves issue with injected stream not displaying in broadcast channel. Release resolves issues:
+- [42](https://github.com/AgoraIO/Agora-Word-Press/issues/42) 
+- [60](https://github.com/AgoraIO/Agora-Word-Press/issues/60) 
+
+Version 2.0.0
+Updated with a new UI, improved screen sharing, multi-host broadcasts, real-time chat, and other features/improvements.
+- [47](https://github.com/AgoraIO/Agora-WordPress/issues/47) 
+- [48](https://github.com/AgoraIO/Agora-WordPress/issues/48) 
+- [49](https://github.com/AgoraIO/Agora-WordPress/issues/49) 
+- [50](https://github.com/AgoraIO/Agora-WordPress/issues/50) 
+- [62](https://github.com/AgoraIO/Agora-WordPress/issues/62) 
+- [63](https://github.com/AgoraIO/Agora-WordPress/issues/63) 
+- [65](https://github.com/AgoraIO/Agora-WordPress/issues/65) 
+- [66](https://github.com/AgoraIO/Agora-WordPress/issues/66) 
+- [67](https://github.com/AgoraIO/Agora-WordPress/issues/67) 
+- [71](https://github.com/AgoraIO/Agora-WordPress/issues/71) 
+
+Version 2.0.1
+[Patch] fixes a broken image links in the prompt messages when user denies camera/mic permissions.
+
+Version 2.0.2
+Resolves an issue with certain frameworks not enquing the RTM SDK correctly. 
+- [82](https://github.com/AgoraIO/Agora-WordPress/pull/82)
+
+Version 2.0.3
+Resolves an issue with certain frameworks not enquing the RTM SDK correctly in full screen template. 
+
+Version 2.0.4
+Resolves an issue with certain frameworks not enquing the RTC SDK correctly in audience client.
+
+Version 2.0.5
+Add a waiting time before total disconnect on Audience views and wait for broadcaster reconnection.
+
+Version 2.0.6
+Adds a patch for autoplay policy issues. When remote user joins, if browser autoplay policy blocks video with audio playback, the video will play without audio and the mute icon will appear. The user will need to click each remote video to enable the audio. The requirement for clicking each stream is to support Safari which has the strictest autoplay policy.
+
+Version 2.0.7
+Resolves issues with Screen Share (#95 , #96). Resolved an issue with black boxes (#91). Resolves CSS issue causing audience button to be hidden.
+- [91](https://github.com/AgoraIO/Agora-WordPress/issues/91) 
+- [95](https://github.com/AgoraIO/Agora-WordPress/issues/95) 
+- [96](https://github.com/AgoraIO/Agora-WordPress/issues/96) 
+
+Version 2.0.8
+Resolves an issue in full screen templates with RTM not loading in the correct order. 
+
+Version 2.0.9
+Resolves an issue with the UI for channels containing more than 9 streams.
+
+Version 3.0.0
+Adds new features, exposes more customizations, and resolves some issues.
+  - Channel Admin user
+  - Embed cloud recordings using shortcodes
+  - Option to enable pre-call/device-test view
+  - Floating or Grid layout option per channel
+  - Color customizations for all UI elements
+  - Cloud recording settings for individual or composite recordings
+  - Option to limit # of "hosts" within a communication channel (non-user specific)
+  - Set an Admin Host to allow for moderator controls within a channel
+  - Improved handling for browser "auto-play" policies
+  - Auto-mute mic/audio on channel start
+  - Chat now supports sending and receiving files (limited to specific common file types)
+  - Resolves issues: [44](https://github.com/AgoraIO/Agora-WordPress/issues/44), [53](https://github.com/AgoraIO/Agora-WordPress/issues/53) , [55](https://github.com/AgoraIO/Agora-WordPress/issues/55), [62](https://github.com/AgoraIO/Agora-WordPress/issues/62), [66](https://github.com/AgoraIO/Agora-WordPress/issues/66)  , [94](https://github.com/AgoraIO/Agora-WordPress/issues/94), [101](https://github.com/AgoraIO/Agora-WordPress/issues/101) , [103](https://github.com/AgoraIO/Agora-WordPress/issues/103) 
+  
+
 == Frequently Asked Questions ==
-...
+#1.  Why don't my project credentials (App ID and App Certificate) get saved when I input them on the Settings tab? 
+
+  This could be occurring for a few different reasons, one of the more common issues is conflicts with plugins. To test if it is a plugin conflict, please disable all plugins except for Agora. Then, try to save your AppID and App Certificate. 
+
+  If this does not resolve the issue and your App ID and App Certificate are still not getting stored, please [file a support ticket](https://agora-ticket.agora.io)
+
+#2. What is the purpose of the RTMP and external URL buttons?
+
+  The option for RTMP is for the purpose of pushing your Agora stream to a 3rd party service such as Vimeo or YouTube as a way to leverage 3rd party streaming services to increase your reach/visibility. This is an optional feature that does not need to be used if you don't want it. 
+
+  The external url is for ingesting a stream from a CDN into the Agora stream. Similar to RTMP, this is an optional feature that does not need to be used if you don't want it. 
+
+#3. How can I hide the RTMP and external URL buttons?
+
+  You can hide the RTMP and external URL buttons by hiding their container. To do so, add this to your theme's style.css: 
+  `#rtmp-btn-container { display: none !important; }`
+
+#4. Does communication mode support cloud recording?
+
+  Currently only Broadcast mode supports cloud recording, where the broadcaster has to initiate the recording.The decision was made during development to for privacy of users. The plugin allows for setting the cloud recording credentials within the communication channel settings because we want to allow users to extend the plugin based on their needs.
+
+#5. Why doesn't the video work? I see the buttons but I don't get any prompts for video access.
+
+  Browsers require a secure connection (HTTPS) for accessing a device's microphone and camera. When testing locally, localhost is a whitelisted URL but once you deploy to production you will need to have a secure connection for the plugin to function properly.
+
+#6. Why does the video look cropped? How can I set the video to not appear cropped?
+
+   *A:* When embedding a `<video>` element, the `object-fit` CSS property specifies how the `<video>` should be resized to fit its container. (details: [W3C - object-fit](https://www.w3schools.com/css/css3_object-fit.asp)). The Agora Video for WordPress plugin uses the default setting of `cover`, as set by the Agora Web SDK. To change this, you can use CSS. Within the WordPress Admin dashboard, click "Appearance" > "Customize" and then click "Additional CSS". Copy and paste the copy below into the "Additional CSS" input field and click the "Publish" button.  
+
+``.agora .screen-users video{ object-fit: contain !important;}
 
 == Upgrade Notice ==
+[Major Update] Version 3.0.0 adds many new features and resolves past issues.
 ...

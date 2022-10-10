@@ -33,15 +33,33 @@ function agoraio_admin_save_button( $channel_id ) {
 function agora_render_setting_row_select($id, $title, $options, $settings, $prefix=null) {
   $input_id = !empty($prefix) ? $prefix.'-'.$id : $id;
   ?>
-  <tr>
+  <tr id="<?php echo $id; ?>-row">
     <th scope="row"><label for="<?php echo $input_id ?>"><?php echo $title; ?></label></th>
     <td>
-      <select id="<?php echo $input_id ?>" name="<?php echo $input_id ?>">
-        <?php foreach ($options as $key => $value) {
+      <select id="<?php echo $input_id ?>" name="<?php echo $input_id ?>" style="<?php if($id == "recording_layout"){ echo "float:left;"; } ?>">
+        <?php 
+        //If no layout is selected default layout will be best fit
+        if($id == "recording_layout" && $settings[$input_id]==''){
+          $settings[$input_id] = 1;
+        }
+        foreach ($options as $key => $value) {
           $selected = ($settings[$input_id]==$key) ? 'selected="selected"' : '';
           echo '<option value="'.$key.'" '.$selected.'>'.$value.'</option>';
         } ?>
       </select>
+
+      <?php 
+      /* Add and show recording layout images with the option */
+      if($id == "recording_layout"){ 
+        $layoutImg = plugins_url('wp-agora-io')."/imgs/recordings/".$settings[$input_id]."-layout.png";
+        ?>
+        <div class="recording_layout_image_section">
+            <div>
+              <img src="<?php echo $layoutImg; ?>" height="30" width="50">
+            </div>
+        </div>  
+      <?php } ?>
+
     </td>
   </tr>
   <?php
@@ -50,7 +68,7 @@ function agora_render_setting_row_select($id, $title, $options, $settings, $pref
 function agora_render_setting_row($id, $title, $settings, $prefix, $inputType="number") {
   $input_id = !empty($prefix) ? $prefix.'-'.$id : $id;
   ?>
-  <tr>
+  <tr id="<?php echo $id; ?>-row">
     <th scope="row"><label for="<?php echo $input_id ?>"><?php echo $title ?></label></th>
     <td>
       <input
@@ -149,6 +167,9 @@ function agora_render_setting_row($id, $title, $settings, $prefix, $inputType="n
 
       <div id="postbox-container-3" class="postbox-container">
         <?php do_action( 'agoraio_channel_form_recording', $post ); ?>
+        <?php do_action( 'agoraio_channel_form_chat_support', $post ); ?>
+        <?php //do_action( 'agoraio_channel_form_ghost_mode', $post ); ?>
+        <?php //do_action( 'agoraio_channel_form_layout', $post ); ?>
 
         <p class="submit"><?php agoraio_admin_save_button( $post_id ); ?></p>
       </div>
@@ -168,8 +189,9 @@ function render_agoraio_channel_form_settings($channel) {
   // echo "<pre>Settings:".print_r(, true)."</pre>";
   $props = $channel->get_properties();
   $type = $props['type'];
-  $userHost = $props['host'];
+  $userHost = is_array($props['host']) ? $props['host'] : array($props['host']);
   $settings = $props['settings'];
+  // echo("<pre>".print_r($userHost, true)."</pre>");
   ?>
   <ul class="nav nav-tabs">
     <li class="active">
@@ -203,19 +225,34 @@ function render_agoraio_channel_form_settings($channel) {
           $props
         ) ?>
         <tr id="broadcast-host-row">
-          <th scope="row"><label for="host"><?php _e('Broadcaster User', 'agoraio'); ?></label></th>
+          <th scope="row"><label for="host"><?php _e('Broadcast Users', 'agoraio'); ?></label></th>
           <td>
-            <?php
-            $dropdownParams = array(
-              "id" => "host",
-              "name" => "host",
-              "class" => "large-dropdown",
-            );
-            if (!empty($userHost)) {
-              $dropdownParams['selected'] = $userHost;
-            }
-            wp_dropdown_users($dropdownParams);
-            ?>
+            <div id="broadcast-users-list" data-load-users='<?php echo json_encode($userHost) ?>'>
+              <span class="helper-text help-add-more-users"><?php _e('Please add at least one user', 'agoraio') ?></span>
+            </div>
+            <button id="add-more-users" class="button-secondary" type="button">Add User</button>
+            <div id="add-more-users-controls" class="add-more-users-controls">
+              <?php
+              $dropdownParams = array(
+                "id" => "host",
+                "name" => "host",
+                "class" => "large-dropdown",
+              );
+              // if (!empty($userHost)) { $dropdownParams['selected'] = $userHost; }
+              wp_dropdown_users($dropdownParams);
+              ?>
+              <span id="add-more-buttons">
+                <button id="agora-add-user" class="button-primary" type="button">Add</button>
+                <button id="agora-cancel-add-user" class="button-cancel" type="button">Cancel</button>
+              </span>
+              <span id="add-more-loader" class="agora-loader" style="display: none">
+                <img src="<?php echo plugin_dir_url(__DIR__ . '/../index.php') ?>css/loader.svg" width="38" alt="agora-loader" />
+              </span>
+              <span id="add-user-error-msg" class="notice notice-error" style="display:none">
+                <?php _e('User already added.', 'agoraio') ?>
+              </span>
+            </div>
+
           </td>
         </tr>
       </table>
@@ -242,6 +279,12 @@ function agora_render_video_settings($settings, $prefix) {
   ?>
   <table class="form-table">
     <?php
+
+    if ($prefix==='external') {
+      agora_render_setting_row('rtmpServerURL', __('RTMP Server URL', 'agoraio'), $settings, $prefix, "text");
+      agora_render_setting_row('streamKey', __('Stream key', 'agoraio'), $settings, $prefix, "text");
+    }
+    
     agora_render_setting_row('width', __('Width', 'agoraio'), $settings, $prefix);
     agora_render_setting_row('height', __('Height', 'agoraio'), $settings, $prefix);
     agora_render_setting_row('videoBitrate', __('Video Bitrate', 'agoraio'), $settings, $prefix);
@@ -346,6 +389,114 @@ function render_agoraio_channel_form_appearance($channel) {
   <?php
 }
 
+// Metabox content for Chat support tab
+function render_agoraio_channel_form_chat_support($channel) {
+  $props = $channel->get_properties();
+  $ChatSupportloggedin = $props['chat_support_loggedin'];
+  ?>
+  <table class="form-table">
+  <?php agora_render_setting_row_select(
+      'chat_support_loggedin',
+      __('Enable Chat Support (logged-in users)', 'agoraio'),
+      array(
+        '' => __('Select', 'agoraio'),
+        1 => __('Yes', 'agoraio'),
+        0 => __('No', 'agoraio')
+      ), $props, '');
+   ?>
+  <?php agora_render_setting_row_select(
+      'ghost_mode',
+      __('Enable Ghost Mode', 'agoraio'),
+      array(
+        '' => __('Select', 'agoraio'),
+        1 => __('Yes', 'agoraio'),
+        0 => __('No', 'agoraio')
+      ), $props, '');
+   ?>
+     <?php agora_render_setting_row_select(
+      'channel_layout',
+      __('Layout', 'agoraio'),
+      array(
+        '' => __('Select', 'agoraio'),
+        'grid' => __('Grid View', 'agoraio'),
+        'speaker' => __('Speaker View', 'agoraio')
+      ), $props, '');
+   ?>
+    <?php agora_render_setting_row_select(
+      'mute_all_users',
+      __('Mute all users Audio', 'agoraio'),
+      array(
+        '' => __('Select', 'agoraio'),
+        1 => __('Yes', 'agoraio'),
+        0 => __('No', 'agoraio')
+      ), $props, '');
+   ?>
+
+  <?php agora_render_setting_row_select(
+      'mute_all_users_video',
+      __('Mute all users Video', 'agoraio'),
+      array(
+        '' => __('Select', 'agoraio'),
+        1 => __('Yes', 'agoraio'),
+        0 => __('No', 'agoraio')
+      ), $props, '');
+   ?>
+
+    <?php agora_render_setting_row_select(
+      'chat_history',
+      __('Enable Chat History', 'agoraio'),
+      array(
+        '' => __('Select', 'agoraio'),
+        1 => __('Yes', 'agoraio'),
+        0 => __('No', 'agoraio')
+      ), $props, '');
+   ?>
+    <?php agora_render_setting_row_select(
+      'pre_call_video',
+      __('Pre-call/video test', 'agoraio'),
+      array(
+        '' => __('Select', 'agoraio'),
+        1 => __('Yes', 'agoraio'),
+        0 => __('No', 'agoraio')
+      ), $props, '');
+   ?>
+
+  <?php
+    $args = array('fields' => array( 'ID', 'display_name' ) );
+    $users = get_users($args);
+
+    $users_options = array(
+      '' => __('Select', 'agoraio')
+    );
+
+    foreach($users as $user){
+      $users_options[$user->ID] = __($user->display_name, 'agoraio');
+    }
+
+    agora_render_setting_row_select(
+    'admin_user',
+    __('Admin User', 'agoraio'),
+    $users_options, $props, '');
+  ?>
+
+  <?php agora_render_setting_row_select(
+      'admin_user_unmute_forcefully',
+      __('Can Admin user unmute Audio/Video forcefully', 'agoraio'),
+      array(
+        '' => __('Select', 'agoraio'),
+        1 => __('Yes', 'agoraio'),
+        0 => __('No', 'agoraio')
+      ), $props, '');
+  ?>
+
+<?php 
+  agora_render_setting_row('max_host_users', __('Maximum No. of hosts (Excluding Broadcasters)', 'agoraio'), $props, '', 'text');    
+?>
+
+  </table>
+  <?php
+}
+
 
 function render_agoraio_channel_form_recording($channel) {
   $props = $channel->get_properties();
@@ -373,6 +524,25 @@ function render_agoraio_channel_form_recording($channel) {
       echo '<input type="hidden" id="region-tmp" value="'.$recording['region'].'" />';
     }
 
+    agora_render_setting_row_select(
+      'protoType',
+      __('Type <div class="tooltip">&#9432;
+      <span class="tooltiptext">For composite recording, we are playing m3u8 and mp4 for individual.</span>
+      </div>', 'agoraio'),
+      array(
+        'composite' => __('Composite', 'agoraio'),
+        'individual' => __('Individual', 'agoraio')
+      ), $recording, '');
+
+    agora_render_setting_row_select(
+      'recording_layout',
+      __('Layout', 'agoraio'),
+      array(
+        1 => __('Best Fit', 'agoraio'),
+        0 => __('Floating', 'agoraio'),
+        2 => __('Vertical', 'agoraio')
+      ), $recording, '');   
+    
     agora_render_setting_row('bucket', __('Bucket', 'agoraio'), $recording, '', 'text');
 
     agora_render_setting_row('accessKey', __('Access Key', 'agoraio'), $recording, '', 'text');
